@@ -13,6 +13,7 @@
   <title>IT202 Project 1</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -71,17 +72,79 @@
         <div class="col-xs-8">
         <label for="status">Property Status:</label>
         <select class="form-control" id="status">
-          <option>All</option>
-          <option>Owned by City</option>
-          <option>Not City Owned</option>
-          <option>Sold</option>
+          <option value="All">All</option>
+          <option value="Owned by City">Owned by City</option>
+          <option value="Not City Owned">Not City Owned</option>
+          <option value="Sold">Sold</option>
         </select>      
         </div>
       </div>
-      <button type="submit" class="btn btn-defualt">Search</button>
+      <button id="searchBtn" type="button" class="btn btn-defualt">Search</button>
     </form>
   </div> <!-- End FormDiv -->
   
   
+    <div id="dataDiv1" class="col-md-6" style="width:40%">
+    
+  </div>
+  <div id="dataDiv2" class="col-md-6" style="width:40%">
+    
+  </div>
+  <!-- Invisible card Template -->
+  <div id="ogCard" class="panel" style="margin-left:5%">
+    <div class="panel-body">
+      <h4 class="panel-title"></h5>
+      <h5 class="panel-subtitle mb-2 text-muted"></h6>
+      <p class="panel-text"></p>
+      <h6 class="panel-text"></h6> 
+    </div>
+  </div>
+      
+ 
+    
+  
+<script>
+  
+  let searchBtn = document.querySelector("#searchBtn");
+  searchBtn.addEventListener("click", checkFilters);
+  
+  function checkFilters(){
+    let ward = document.querySelector("#ward").value;
+    let zip = document.querySelector("#zip").value;
+    let sqftlow = document.querySelector("#sqftLow").value;
+    let sqfthigh = document.querySelector("#sqftHigh").value;
+    let status = document.querySelector("#status").value;
+  
+    let file="https://data.cityofchicago.org/resource/aksk-kvfp.json"
+    fetch (file)
+      .then(x => { 
+              return x.json()
+            })
+      .then(json => {
+              let i = 0;
+              let originalCard = document.querySelector("#ogCard");
+              for(i = 0; i < json.length; i++){
+                let copy = originalCard.cloneNode(true);
+                copy.querySelector("h4").innerHTML = json[i].community_area_name;
+                copy.querySelector("h5").innerHTML = json[i].pin;
+                let innerText = json[i].address + "<br>" + "Chicago, IL " + json[i].zip_code;
+                copy.querySelector("p").innerHTML = innerText;
+                let feet = json[i].sq_ft + " Square Feet";
+                copy.querySelector("h6").innerHTML = feet;
+                if(i%2==0){
+                  document.querySelector("#dataDiv2").appendChild(copy);
+                }
+                else{
+                  document.querySelector("#dataDiv1").appendChild(copy);
+                }
+                
+              }
+            });
+  }
+  
+  
+</script>
+  
 </body>
 </html>
+  
