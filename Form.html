@@ -84,7 +84,7 @@
   </div> <!-- End FormDiv -->
   
   
-    <div id="dataDiv1" class="col-md-6" style="width:40%">
+  <div id="dataDiv1" class="col-md-6" style="width:40%">
     
   </div>
   <div id="dataDiv2" class="col-md-6" style="width:40%">
@@ -93,8 +93,8 @@
   <!-- Invisible card Template -->
   <div id="ogCard" class="panel" style="margin-left:5%">
     <div class="panel-body">
-      <h4 class="panel-title"></h5>
-      <h5 class="panel-subtitle mb-2 text-muted"></h6>
+      <h4 class="panel-title"></h4>
+      <h5 class="panel-subtitle mb-2 text-muted"></h5>
       <p class="panel-text"></p>
       <h6 class="panel-text"></h6> 
     </div>
@@ -109,13 +109,14 @@
   searchBtn.addEventListener("click", checkFilters);
   
   function checkFilters(){
-    let ward = document.querySelector("#ward").value;
-    let zip = document.querySelector("#zip").value;
-    let sqftlow = document.querySelector("#sqftLow").value;
-    let sqfthigh = document.querySelector("#sqftHigh").value;
-    let status = document.querySelector("#status").value;
-  
-    let file="https://data.cityofchicago.org/resource/aksk-kvfp.json"
+    
+    document.querySelector("#dataDiv1").innerHTML = "";
+    document.querySelector("#dataDiv2").innerHTML = "";
+   
+    document.querySelector("#formDiv").style.display = "none";
+    document.getElementsByClassName("active")[0].classList.remove("active");
+    document.querySelector("#data").classList.add("active");
+    let file = getUrl();
     fetch (file)
       .then(x => { 
               return x.json()
@@ -140,6 +141,67 @@
                 
               }
             });
+  }
+  
+  function getUrl(){
+     
+    let wardnum = document.querySelector("#ward").value;
+    let zip = document.querySelector("#zip").value;
+    let sqftlow = document.querySelector("#sqftLow").value;
+    let sqfthigh = document.querySelector("#sqftHigh").value;
+    let status = document.querySelector("#status").value;
+    
+    let searchString = "";
+    let anyFilter = 0;
+    if(wardnum != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      searchString = searchString + "ward=" + wardnum;
+    }
+    if(zip != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "zip_code='" + zip + "'";
+    }
+    if(sqftlow != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "sq_ft>" + sqftlow;
+    }
+    if(sqfthigh != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "sq_ft<" + sqfthigh;
+    }
+    if(status != "All"){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "property_status='" + status + "'";
+    }
+    
+    return "https://data.cityofchicago.org/resource/aksk-kvfp.json"+searchString;
   }
   
   
