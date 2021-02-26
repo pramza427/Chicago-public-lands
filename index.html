@@ -6,6 +6,10 @@
   margin:5%;
   font-size:20px;
 }
+#map {
+  height: 70%;
+  width: 90%;
+}
 </style>
 <!DOCTYPE html>
 <html>
@@ -97,17 +101,23 @@
   </div> <!-- End Form -->
   
   <!-- Two Columns to show data results -->
-  <div id="data" style="display:none;">
-    <div id="dataDiv1" class="col-md-6 content" style="width:40%">
+  <div id="data" class="content" style="display:none;">
+    <div id="dataDiv1" class="col-md-6" style="width:40%">
     
     </div>
-    <div id="dataDiv2" class="col-md-6 content" style="width:40%">
+    <div id="dataDiv2" class="col-md-6" style="width:40%">
     
     </div>
   </div>
   
   <!-- Map Start -->
-  
+  <div class="content" id="map" style="display:none;">
+    
+  </div>
+  <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAtemI2wGOdaB-bZLurssCbWR3J1335ULY&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
   <!-- End Map -->
   
   <!-- About Start -->
@@ -136,6 +146,20 @@
 </html>
   
 <script>
+  // Set globl variable map
+  let myMap;
+  let markers = [];
+  
+  function initMap(){
+    const chicago = { lat: 41.878 , lng: -87.629 };
+    // The map, centered at Uluru
+    myMap = new google.maps.Map(document.getElementById("map"), {
+      zoom: 10,
+      center: chicago,
+    });
+    
+  }
+  
   // Create click listeners for navbar to only show one "screen" at a time
   let navAnchors = document.querySelectorAll("div#myNav a");
   navAnchors.forEach( (anchor) => {
@@ -170,7 +194,7 @@
    
     document.querySelector("#form").style.display = "none";
     document.querySelector(".active").classList.remove("active");
-    document.querySelector("#data").classList.add("active");
+    let activeScreen = document.querySelector("[data-lname=data]").classList.add("active");
     let file = getUrl();
     fetch (file)
       .then(x => { 
@@ -187,6 +211,10 @@
                 copy.querySelector("p").innerHTML = innerText;
                 let feet = json[i].sq_ft + " Square Feet";
                 copy.querySelector("h6").innerHTML = feet;
+                // Create a marker on the map and store it
+                const location = { lat: parseFloat(json[i].latitude), lng: parseFloat(json[i].longitude) };
+                addMarker(location, copy);
+                
                 if(i%2==0){
                   document.querySelector("#dataDiv2").appendChild(copy);
                 }
@@ -194,11 +222,11 @@
                   document.querySelector("#dataDiv1").appendChild(copy);
                 }
                 
+                
               }
             });
     document.querySelector("#data").style.display = "block";
-    document.querySelector("#dataDiv1").style.display = "block";
-    document.querySelector("#dataDiv2").style.display = "block";
+    
   }
   // Creates url with sql based on the entered filters
   function getUrl(){
@@ -261,6 +289,23 @@
     
     return "https://data.cityofchicago.org/resource/aksk-kvfp.json"+searchString;
   }
+  
+  function addMarker(location, copy) {
+    const marker = new google.maps.Marker({
+      position: location,
+      map: myMap,
+    });
+    let infowindow = new google.maps.InfoWindow({
+      content: copy.innerHTML
+    })
+    markers.push(marker);
+    
+    marker.addListener("click", () => {
+      infowindow.open(myMap, marker);
+    })
+  }
+  
+  
   
   
 </script>
