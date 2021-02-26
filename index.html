@@ -3,7 +3,7 @@
   font-size:25px;
 }
 .content{
-  margin-left:10%;
+  margin:5%;
   font-size:20px;
 }
 </style>
@@ -13,11 +13,13 @@
   <title>IT202 Project 1</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
+  <!-- Navbar Start -->
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -28,19 +30,20 @@
         </button>
         <a class="navbar-brand" href="#">Project 1</a>
       </div>
-      <div class="collapse navbar-collapse" id="myNavbar">
+      <div class="collapse navbar-collapse" id="myNav">
         <ul class="nav navbar-nav">
-          <li id="home" class="active"><a href="#">Home</a></li>
-          <li id="form"><a href="Form.html">Form</a></li>
-          <li id="data"><a href="#">Data</a></li>
-          <li id="map"><a href="#">Map</a></li>
-          <li id="about"><a href="About.html">About</a></li>
+          <li data-lname="home" class="active"><a data-screen="home" href="#" >Home</a></li>
+          <li data-lname="form"><a data-screen="form" href="#">Form</a></li>
+          <li data-lname="data"><a data-screen="data" href="#">Data</a></li>
+          <li data-lname="map"><a data-screen="map" href="#">Map</a></li>
+          <li data-lname="about"><a data-screen="about" href="#">About</a></li>
         </ul>
       </div>
     </div>
-  </nav>
+  </nav> <!-- End Navbar -->
   
-  <div class="content">
+  <!-- Home Start -->
+  <div class="content" id="home">
     <h2>Home</h2>
     <p>
       This website is used to browse Chicago owned land.<br>
@@ -48,9 +51,218 @@
       Then go to the data tab to see a list of city owned land that fits your criteria.<br>
       Alternitively see the same info on a map in the map tab.<br>
     </p>
+  </div> <!-- End Home -->
+  
+  <!-- Form Start -->
+  <div class="content" id="form" style="display:none;">
+    <h2>Filters</h2>
+    <p>Choose one or more filters to enter:</p>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <div class="col-xs-8">
+          <label for="ward">Ward:</label>
+          <input type="number" class="form-control" id="ward" placeholder="Enter Ward Number" name="ward">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-8">
+          <label for="zip">Zip Code:</label>
+          <input type="number" class="form-control" id="zip" placeholder="Enter Zip Code" name="zip">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-4">
+          <label for="sqftLow">Square Footage From:</label>
+          <input type="number" class="form-control" id="sqftLow" placeholder="Lower Bound" name="sqftLow">
+        </div>
+        <div class="col-xs-4">
+          <label for="sqftHigh">To</label>
+          <input type="number" class="form-control" id="sqftHigh" placeholder="Higher Bound" name="sqftHigh">
+        </div>
+        
+      </div>
+      <div class="form-group">
+        <div class="col-xs-8">
+        <label for="status">Property Status:</label>
+        <select class="form-control" id="status">
+          <option value="All">All</option>
+          <option value="Owned by City">Owned by City</option>
+          <option value="Not City Owned">Not City Owned</option>
+          <option value="Sold">Sold</option>
+        </select>      
+        </div>
+      </div>
+      <button id="searchBtn" type="button" class="btn btn-defualt">Search</button>
+    </form>
+  </div> <!-- End Form -->
+  
+  <!-- Two Columns to show data results -->
+  <div id="data" style="display:none;">
+    <div id="dataDiv1" class="col-md-6 content" style="width:40%">
+    
+    </div>
+    <div id="dataDiv2" class="col-md-6 content" style="width:40%">
+    
+    </div>
   </div>
-
+  
+  <!-- Map Start -->
+  
+  <!-- End Map -->
+  
+  <!-- About Start -->
+  <div class="content" id="about" style="display:none;">
+    <h2>About</h2>
+    <p>
+      Made for Project 1 of IT202 at University of Illinois at Chicago<br>
+      Version 0.6<br>
+      <br>© Piotr Ramza 2021
+    </p>
+  </div>
+  <!-- End About -->
   
   
+  <!-- Invisible card Template used for copying -->
+  <div id="ogCard" class="panel" style="margin-left:5%">
+    <div class="panel-body">
+      <h4 class="panel-title"></h4>
+      <h5 class="panel-subtitle mb-2 text-muted"></h5>
+      <p class="panel-text"></p>
+      <h6 class="panel-text"></h6> 
+    </div>
+  </div>
+      
 </body>
 </html>
+  
+<script>
+  // Create click listeners for navbar to only show one "screen" at a time
+  let navAnchors = document.querySelectorAll("div#myNav a");
+  navAnchors.forEach( (anchor) => {
+    anchor.addEventListener("click", (event) => {
+      
+      // Hide all screens
+      document.querySelectorAll(".content").forEach( (screen) => {
+        screen.style.display = "none";
+      })
+      
+      // Get desired screen
+      let screen = event.target.getAttribute("data-screen");
+      // get the target div and target navbar link to highlight
+      let targetScreen = document.querySelector("#" + screen);
+      let activeScreen = document.querySelector("[data-lname=" + screen + "]");
+      // show target div and highligh navbar link
+      targetScreen.style.display = "block";
+      document.querySelector(".active").classList.remove("active");
+      activeScreen.classList.add("active");
+    })
+  });
+  
+  let searchBtn = document.querySelector("#searchBtn");
+  searchBtn.addEventListener("click", checkFilters);
+  
+  // Creates cards based on returned, filtered results
+  // uses getUrl() to get proper url for entered filters
+  function checkFilters(){
+    
+    document.querySelector("#dataDiv1").innerHTML = "";
+    document.querySelector("#dataDiv2").innerHTML = "";
+   
+    document.querySelector("#form").style.display = "none";
+    document.querySelector(".active").classList.remove("active");
+    document.querySelector("#data").classList.add("active");
+    let file = getUrl();
+    fetch (file)
+      .then(x => { 
+              return x.json()
+            })
+      .then(json => {
+              let i = 0;
+              let originalCard = document.querySelector("#ogCard");
+              for(i = 0; i < json.length; i++){
+                let copy = originalCard.cloneNode(true);
+                copy.querySelector("h4").innerHTML = json[i].community_area_name;
+                copy.querySelector("h5").innerHTML = json[i].pin;
+                let innerText = json[i].address + "<br>" + "Chicago, IL " + json[i].zip_code;
+                copy.querySelector("p").innerHTML = innerText;
+                let feet = json[i].sq_ft + " Square Feet";
+                copy.querySelector("h6").innerHTML = feet;
+                if(i%2==0){
+                  document.querySelector("#dataDiv2").appendChild(copy);
+                }
+                else{
+                  document.querySelector("#dataDiv1").appendChild(copy);
+                }
+                
+              }
+            });
+    document.querySelector("#data").style.display = "block";
+    document.querySelector("#dataDiv1").style.display = "block";
+    document.querySelector("#dataDiv2").style.display = "block";
+  }
+  // Creates url with sql based on the entered filters
+  function getUrl(){
+     
+    let wardnum = document.querySelector("#ward").value;
+    let zip = document.querySelector("#zip").value;
+    let sqftlow = document.querySelector("#sqftLow").value;
+    let sqfthigh = document.querySelector("#sqftHigh").value;
+    let status = document.querySelector("#status").value;
+    
+    let searchString = "";
+    let anyFilter = 0;
+    if(wardnum != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      searchString = searchString + "ward=" + wardnum;
+    }
+    if(zip != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "zip_code='" + zip + "'";
+    }
+    if(sqftlow != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "sq_ft>" + sqftlow;
+    }
+    if(sqfthigh != ""){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "sq_ft<" + sqfthigh;
+    }
+    if(status != "All"){
+      if(anyFilter == 0){
+        searchString = searchString + "?$where=";
+        anyFilter = 1;
+      }
+      else{
+        searchString = searchString + " AND "
+      }
+      searchString = searchString + "property_status='" + status + "'";
+    }
+    
+    return "https://data.cityofchicago.org/resource/aksk-kvfp.json"+searchString;
+  }
+  
+  
+</script>
+
+  
