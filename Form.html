@@ -19,7 +19,8 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-default">
+  <!-- Navbar Start -->
+  <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -29,19 +30,31 @@
         </button>
         <a class="navbar-brand" href="#">Project 1</a>
       </div>
-      <div class="collapse navbar-collapse" id="myNavbar">
+      <div class="collapse navbar-collapse" id="myNav">
         <ul class="nav navbar-nav">
-          <li id="home"><a href="index.html">Home</a></li>
-          <li id="form" class="active"><a href="Form.html">Form</a></li>
-          <li id="data"><a href="#">Data</a></li>
-          <li id="map"><a href="#">Map</a></li>
-          <li id="about"><a href="About.html">About</a></li>
+          <li data-lname="home" class="active"><a data-screen="home" href="#" >Home</a></li>
+          <li data-lname="form"><a data-screen="form" href="#">Form</a></li>
+          <li data-lname="data"><a data-screen="data" href="#">Data</a></li>
+          <li data-lname="map"><a data-screen="map" href="#">Map</a></li>
+          <li data-lname="about"><a data-screen="about" href="#">About</a></li>
         </ul>
       </div>
     </div>
-  </nav>
+  </nav> <!-- End Navbar -->
   
-  <div class="content" id="formDiv">
+  <!-- Home Start -->
+  <div class="content" id="home">
+    <h2>Home</h2>
+    <p>
+      This website is used to browse Chicago owned land.<br>
+      First go to the form tab to filter the data to only see what you're looking for.<br>
+      Then go to the data tab to see a list of city owned land that fits your criteria.<br>
+      Alternitively see the same info on a map in the map tab.<br>
+    </p>
+  </div> <!-- End Home -->
+  
+  <!-- Form Start -->
+  <div class="content" id="form">
     <h2>Filters</h2>
     <p>Choose one or more filters to enter:</p>
     <form class="form-horizontal">
@@ -81,16 +94,35 @@
       </div>
       <button id="searchBtn" type="button" class="btn btn-defualt">Search</button>
     </form>
-  </div> <!-- End FormDiv -->
+  </div> <!-- End Form -->
+  
+  <!-- Two Columns to show data results -->
+  <div id="data">
+    <div id="dataDiv1" class="col-md-6 content" style="width:40%">
+    
+    </div>
+    <div id="dataDiv2" class="col-md-6 content" style="width:40%">
+    
+    </div>
+  </div>
+  
+  <!-- Map Start -->
+  
+  <!-- End Map -->
+  
+  <!-- About Start -->
+  <div class="content" id="about">
+    <h2>About</h2>
+    <p>
+      Made for Project 1 of IT202 at University of Illinois at Chicago<br>
+      Version 0.6<br>
+      <br>© Piotr Ramza 2021
+    </p>
+  </div>
+  <!-- End About -->
   
   
-  <div id="dataDiv1" class="col-md-6" style="width:40%">
-    
-  </div>
-  <div id="dataDiv2" class="col-md-6" style="width:40%">
-    
-  </div>
-  <!-- Invisible card Template -->
+  <!-- Invisible card Template used for copying -->
   <div id="ogCard" class="panel" style="margin-left:5%">
     <div class="panel-body">
       <h4 class="panel-title"></h4>
@@ -100,21 +132,44 @@
     </div>
   </div>
       
- 
-    
+</body>
+</html>
   
 <script>
+  // Create click listeners for navbar to only show one "screen" at a time
+  let navAnchors = document.querySelectorAll("div#myNav a");
+  navAnchors.forEach( (anchor) => {
+    anchor.addEventListener("click", (event) => {
+      
+      // Hide all screens
+      document.querySelectorAll(".content").forEach( (screen) => {
+        screen.style.display = "none";
+      })
+      
+      // Get desired screen
+      let screen = event.target.getAttribute("data-screen");
+      // get the target div and target navbar link to highlight
+      let targetScreen = document.querySelector("#" + screen);
+      let activeScreen = document.querySelector("[data-lname=" + screen + "]");
+      // show target div and highligh navbar link
+      targetScreen.style.display = "block";
+      document.querySelector(".active").classList.remove("active");
+      activeScreen.classList.add("active");
+    })
+  });
   
   let searchBtn = document.querySelector("#searchBtn");
   searchBtn.addEventListener("click", checkFilters);
   
+  // Creates cards based on returned, filtered results
+  // uses getUrl() to get proper url for entered filters
   function checkFilters(){
     
     document.querySelector("#dataDiv1").innerHTML = "";
     document.querySelector("#dataDiv2").innerHTML = "";
    
-    document.querySelector("#formDiv").style.display = "none";
-    document.getElementsByClassName("active")[0].classList.remove("active");
+    document.querySelector("#form").style.display = "none";
+    document.querySelector(".active").classList.remove("active");
     document.querySelector("#data").classList.add("active");
     let file = getUrl();
     fetch (file)
@@ -142,7 +197,7 @@
               }
             });
   }
-  
+  // Creates url with sql based on the entered filters
   function getUrl(){
      
     let wardnum = document.querySelector("#ward").value;
@@ -206,7 +261,5 @@
   
   
 </script>
-  
-</body>
-</html>
+
   

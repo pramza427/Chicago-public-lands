@@ -125,7 +125,7 @@
     <h2>About</h2>
     <p>
       Made for Project 1 of IT202 at University of Illinois at Chicago<br>
-      Version 0.6<br>
+      Version 1.0<br>
       <br>© Piotr Ramza 2021
     </p>
   </div>
@@ -188,7 +188,7 @@
   // Creates cards based on returned, filtered results
   // uses getUrl() to get proper url for entered filters
   function checkFilters(){
-    
+    clearMarkers();
     document.querySelector("#dataDiv1").innerHTML = "";
     document.querySelector("#dataDiv2").innerHTML = "";
    
@@ -305,6 +305,12 @@
     })
   }
   
+  function clearMarkers(){
+    for(var i = 0; i < markers.length; i++){
+      markers[i].setMap(null);
+    }
+    markers = [];
+  }
   
   
   
